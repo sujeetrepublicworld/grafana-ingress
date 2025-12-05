@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: chess  # Creating the 'chess' namespace
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chess-game-deployment
+  namespace: chess  # Set the namespace to 'chess'
+  labels:
+    app: chess-game
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chess-game
+  template:
+    metadata:
+      labels:
+        app: chess-game
+    spec:
+      containers:
+      - name: chess-game
+        image: sujeetkushwaha14/pythonappchess:latest
+        ports:
+        - containerPort: 8000  # Container's internal port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chess-game-service
+  namespace: chess  # Set the namespace to 'chess'
+spec:
+  selector:
+    app: chess-game
+  ports:
+    - protocol: TCP
+      port: 80       # External port for HTTP
+      targetPort: 8000  # Internal container port
+  type: ClusterIP
